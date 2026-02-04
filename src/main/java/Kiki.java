@@ -1,6 +1,9 @@
 import java.util.Scanner;
 
 public class Kiki {
+    // Maximum number of items on the list
+    private static final int MAX_ITEMS = 100;
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -13,9 +16,10 @@ public class Kiki {
         System.out.println("Hey what's up, from\n" + logo);
         System.out.println("How can I help you today?");
 
-        // Kiki's personality trait
-        String lastInput = "";
-        int repeatCount = 0;
+        // Level-2 Personalisation
+        String[] items = new String[MAX_ITEMS];
+        int itemCount = 0;
+        int crowdedListThreshold = 10;
 
         while (true) {
             String input = scanner.nextLine().trim();
@@ -26,18 +30,34 @@ public class Kiki {
                 break;
             }
 
-            // Level-1: echo behaviour
-            System.out.println(input);
-
-            if (input.equals(lastInput)) {
-                repeatCount++;
-            } else {
-                repeatCount = 1;
-                lastInput = input;
+            // Level-2: item-storing behaviour
+            if (input.equalsIgnoreCase("list")) {
+                if (itemCount == 0) {
+                    System.out.println("(Oops, nothing here yet)");
+                } else {
+                    for (int i = 0; i < itemCount; i++) {
+                        System.out.println((i + 1) + ". " + items[i]);
+                    }
+                }
+                continue;
             }
 
-            if (repeatCount == 6) {
-                System.out.println("(...okay, I get it already -.-)");
+            if (itemCount < MAX_ITEMS) {
+                items[itemCount] = input;
+                itemCount++;
+                System.out.println("added: " + input);
+
+                // Personality comment after threshold
+                if (itemCount == 95) {
+                    System.out.println("(psst... we're close to 100 items, watchout!)");
+                }
+            } else {
+                System.out.println("(uh oh... I'm at full capacity :<)");
+            }
+
+            if (input.isEmpty()) {
+                System.out.println("(say something please)");
+                continue;
             }
         }
 
