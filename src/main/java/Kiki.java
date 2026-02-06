@@ -1,6 +1,8 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Kiki {
+
     private static final int MAX_ITEMS = 100;
 
     public static void main(String[] args) {
@@ -13,9 +15,7 @@ public class Kiki {
                 + "| . \\ | |   <| |\n"
                 + "|_|\\_\\|_|_|\\_\\_|\n";
 
-        Task[] tasks = new Task[MAX_ITEMS];
-        int taskCount = 0;
-
+        ArrayList<Task> tasks = new ArrayList<>();
         int crowdedListThreshold = 10;
 
         System.out.println("Hey what's up, from\n" + logo);
@@ -36,12 +36,12 @@ public class Kiki {
             }
 
             if (input.equalsIgnoreCase("list")) {
-                if (taskCount == 0) {
+                if (tasks.isEmpty()) {
                     System.out.println("(Oops, nothing here yet)");
                 } else {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + "." + tasks.get(i));
                     }
                 }
                 continue;
@@ -49,12 +49,12 @@ public class Kiki {
 
             if (input.toLowerCase().startsWith("mark ")) {
                 int index = parseIndex(input.substring(5));
-                if (index == -1 || index > taskCount) {
+                if (index == -1 || index > tasks.size()) {
                     System.out.println("(hmm… which task number is that?)");
                     continue;
                 }
 
-                Task t = tasks[index - 1];
+                Task t = tasks.get(index - 1);
                 t.setDone();
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + t);
@@ -63,20 +63,34 @@ public class Kiki {
 
             if (input.toLowerCase().startsWith("unmark ")) {
                 int index = parseIndex(input.substring(7));
-                if (index == -1 || index > taskCount) {
+                if (index == -1 || index > tasks.size()) {
                     System.out.println("(hmm… which task number is that?)");
                     continue;
                 }
 
-                Task t = tasks[index - 1];
+                Task t = tasks.get(index - 1);
                 t.setNotDone();
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + t);
                 continue;
             }
 
-            // Level-4
+            // Level-6: delete
+            if (input.toLowerCase().startsWith("delete ")) {
+                int index = parseIndex(input.substring(7));
+                if (index == -1 || index > tasks.size()) {
+                    System.out.println("(please give a valid task number to delete)");
+                    continue;
+                }
 
+                Task removed = tasks.remove(index - 1);
+                System.out.println("Noted. I've removed this task:");
+                System.out.println("  " + removed);
+                System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                continue;
+            }
+
+            // Level-4: add tasks
             if (input.toLowerCase().startsWith("todo ")) {
                 String desc = input.substring(5).trim();
                 if (desc.isEmpty()) {
@@ -84,7 +98,7 @@ public class Kiki {
                     continue;
                 }
 
-                taskCount = addTask(tasks, taskCount, new Todo(desc), crowdedListThreshold);
+                addTask(tasks, new Todo(desc), crowdedListThreshold);
                 continue;
             }
 
@@ -104,7 +118,7 @@ public class Kiki {
                     continue;
                 }
 
-                taskCount = addTask(tasks, taskCount, new Deadline(desc, by), crowdedListThreshold);
+                addTask(tasks, new Deadline(desc, by), crowdedListThreshold);
                 continue;
             }
 
@@ -128,39 +142,36 @@ public class Kiki {
                     continue;
                 }
 
-                taskCount = addTask(tasks, taskCount, new Event(desc, from, to), crowdedListThreshold);
+                addTask(tasks, new Event(desc, from, to), crowdedListThreshold);
                 continue;
             }
 
             // If none matched:
-            System.out.println("(try: todo <task> | deadline <task> /by <when> | event <task> /from <start> /to <end>)");
+            System.out.println("(try: todo <task> | deadline <task> /by <when> | event <task> /from <start> /to <end> | mark N | unmark N | delete N | list | bye)");
         }
 
         scanner.close();
     }
 
-    private static int addTask(Task[] tasks, int taskCount, Task task, int crowdedListThreshold) {
-        if (taskCount >= MAX_ITEMS) {
+    private static void addTask(ArrayList<Task> tasks, Task task, int crowdedListThreshold) {
+        if (tasks.size() >= MAX_ITEMS) {
             System.out.println("(uh oh... I'm at full capacity :<)");
-            return taskCount;
+            return;
         }
 
-        tasks[taskCount] = task;
-        taskCount++;
+        tasks.add(task);
 
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
 
         // Kiki personality extras (cosmetic only)
-        if (taskCount == crowdedListThreshold + 1) {
+        if (tasks.size() == crowdedListThreshold + 1) {
             System.out.println("(ok wow… your list is getting kinda real now 😄)");
         }
-        if (taskCount == 95) {
+        if (tasks.size() == 95) {
             System.out.println("(psst... we're close to 100 items, watchout!)");
         }
-
-        return taskCount;
     }
 
     private static int parseIndex(String text) {
