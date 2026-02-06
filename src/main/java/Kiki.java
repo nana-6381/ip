@@ -24,7 +24,6 @@ public class Kiki {
         while (true) {
             String input = scanner.nextLine().trim();
 
-            // Handle empty input first (so we don't store blank tasks)
             if (input.isEmpty()) {
                 System.out.println("(say something please)");
                 continue;
@@ -42,7 +41,7 @@ public class Kiki {
                 } else {
                     System.out.println("Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + ". " + tasks[i]);
+                        System.out.println((i + 1) + "." + tasks[i]);
                     }
                 }
                 continue;
@@ -76,27 +75,92 @@ public class Kiki {
                 continue;
             }
 
-            // Otherwise: treat as a new task to add (Level-2 behavior continues)
-            if (taskCount >= MAX_ITEMS) {
-                System.out.println("(uh oh... I'm at full capacity :<)");
+            // Level-4
+
+            if (input.toLowerCase().startsWith("todo ")) {
+                String desc = input.substring(5).trim();
+                if (desc.isEmpty()) {
+                    System.out.println("(todo needs a description!)");
+                    continue;
+                }
+
+                taskCount = addTask(tasks, taskCount, new Todo(desc), crowdedListThreshold);
                 continue;
             }
 
-            tasks[taskCount] = new Task(input);
-            taskCount++;
-            System.out.println("added: " + input);
+            if (input.toLowerCase().startsWith("deadline ")) {
+                String rest = input.substring(9).trim();
+                int byIndex = rest.indexOf(" /by ");
+                if (byIndex == -1) {
+                    System.out.println("(format: deadline <task> /by <when>)");
+                    continue;
+                }
 
-            // Extra~ behavior after “more than N tasks” (cosmetic only)
-            if (taskCount == crowdedListThreshold + 1) {
-                System.out.println("(ok wow… your list is getting kinda real now 😄)");
+                String desc = rest.substring(0, byIndex).trim();
+                String by = rest.substring(byIndex + 5).trim();
+
+                if (desc.isEmpty() || by.isEmpty()) {
+                    System.out.println("(format: deadline <task> /by <when>)");
+                    continue;
+                }
+
+                taskCount = addTask(tasks, taskCount, new Deadline(desc, by), crowdedListThreshold);
+                continue;
             }
 
-            if (taskCount == 95) {
-                System.out.println("(psst... we're close to 100 items, watchout!)");
+            if (input.toLowerCase().startsWith("event ")) {
+                String rest = input.substring(6).trim();
+
+                int fromIndex = rest.indexOf(" /from ");
+                int toIndex = rest.indexOf(" /to ");
+
+                if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+                    System.out.println("(format: event <task> /from <start> /to <end>)");
+                    continue;
+                }
+
+                String desc = rest.substring(0, fromIndex).trim();
+                String from = rest.substring(fromIndex + 7, toIndex).trim();
+                String to = rest.substring(toIndex + 5).trim();
+
+                if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                    System.out.println("(format: event <task> /from <start> /to <end>)");
+                    continue;
+                }
+
+                taskCount = addTask(tasks, taskCount, new Event(desc, from, to), crowdedListThreshold);
+                continue;
             }
+
+            // If none matched:
+            System.out.println("(try: todo <task> | deadline <task> /by <when> | event <task> /from <start> /to <end>)");
         }
 
         scanner.close();
+    }
+
+    private static int addTask(Task[] tasks, int taskCount, Task task, int crowdedListThreshold) {
+        if (taskCount >= MAX_ITEMS) {
+            System.out.println("(uh oh... I'm at full capacity :<)");
+            return taskCount;
+        }
+
+        tasks[taskCount] = task;
+        taskCount++;
+
+        System.out.println("Got it. I've added this task:");
+        System.out.println("  " + task);
+        System.out.println("Now you have " + taskCount + " tasks in the list.");
+
+        // Kiki personality extras (cosmetic only)
+        if (taskCount == crowdedListThreshold + 1) {
+            System.out.println("(ok wow… your list is getting kinda real now 😄)");
+        }
+        if (taskCount == 95) {
+            System.out.println("(psst... we're close to 100 items, watchout!)");
+        }
+
+        return taskCount;
     }
 
     private static int parseIndex(String text) {
