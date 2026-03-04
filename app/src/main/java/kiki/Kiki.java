@@ -178,6 +178,102 @@ public class Kiki {
         ui.printMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
 
+    public String getResponse(String input) {
+        if (input.isEmpty()) return "(say something please)";
+        String commandWord = Parser.getCommandWord(input);
+        try {
+            switch (commandWord) {
+                case "bye":     return "Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i";
+                case "list":    return buildListResponse();
+                case "find":    return buildFindResponse(input);
+                case "todo":    return buildTodoResponse(input);
+                case "deadline": return buildDeadlineResponse(input);
+                case "event":   return buildEventResponse(input);
+                case "delete":  return buildDeleteResponse(input);
+                default:        return "(try: todo, deadline, event, list, delete, find, or bye)";
+            }
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    private String buildListResponse() {
+        if (tasks.getSize() == 0) return "Your list is empty!";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tasks.getSize(); i++) {
+            sb.append((i + 1)).append(". ").append(tasks.getTask(i)).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    private String buildFindResponse(String input) {
+        if (input.length() <= 5) return "Usage: find <keyword>";
+        String keyword = input.substring(5).trim();
+        ArrayList<Task> found = tasks.findTasks(keyword);
+        if (found.isEmpty()) return "No tasks matching: " + keyword;
+        StringBuilder sb = new StringBuilder("Matching tasks:\n");
+        for (int i = 0; i < found.size(); i++) {
+            sb.append((i + 1)).append(". ").append(found.get(i)).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    private String buildTodoResponse(String input) {
+        String desc = input.substring(4).trim();
+        if (desc.isEmpty()) return "The description of a todo cannot be empty.";
+        Todo t = new Todo(desc);
+        tasks.addTask(t);
+        storage.saveTasks(tasks.getTasks());
+        return "Got it. I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+    }
+
+    private String buildDeadlineResponse(String input) {
+        try {
+            String rest = input.substring(9).trim();
+            int byIndex = rest.indexOf(" /by ");
+            String desc = rest.substring(0, byIndex).trim();
+            String by = rest.substring(byIndex + 5).trim();
+            Deadline t = new Deadline(desc, by);
+            tasks.addTask(t);
+            storage.saveTasks(tasks.getTasks());
+            return "Got it. I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+        } catch (Exception e) {
+            return "Format: deadline <desc> /by yyyy-mm-dd";
+        }
+    }
+
+    private String buildEventResponse(String input) {
+        try {
+            String rest = input.substring(6).trim();
+            int fromIndex = rest.indexOf(" /from ");
+            int toIndex = rest.indexOf(" /to ");
+            String desc = rest.substring(0, fromIndex).trim();
+            String from = rest.substring(fromIndex + 7, toIndex).trim();
+            String to = rest.substring(toIndex + 5).trim();
+            Event t = new Event(desc, from, to);
+            tasks.addTask(t);
+            storage.saveTasks(tasks.getTasks());
+            return "Got it. I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+        } catch (Exception e) {
+            return "Format: event <desc> /from yyyy-mm-dd /to yyyy-mm-dd";
+        }
+    }
+
+    private String buildDeleteResponse(String input) {
+        try {
+            int idx = Parser.parseIndex(input.substring(6)) - 1;
+            if (idx >= 0 && idx < tasks.getSize()) {
+                Task removed = tasks.deleteTask(idx);
+                storage.saveTasks(tasks.getTasks());
+                return "Removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.";
+            } else {
+                return "Invalid task number!";
+            }
+        } catch (Exception e) {
+            return "Format: delete <task number>";
+        }
+    }
+
     /**
      * Entry point of the application
      */

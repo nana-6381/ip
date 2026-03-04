@@ -10,6 +10,13 @@ plugins {
     id 'application'
     id 'java'
     id 'checkstyle'
+    id 'io.github.goooler.shadow' version '8.1.8'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+javafx {
+    version = "17.0.2" // Or the version recommended in your specific guide
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 repositories {
@@ -34,19 +41,12 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'kiki.Kiki'
+    mainClass.set('kiki.Launcher')
 }
 
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'kiki.Kiki'
-        )
-    }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+shadowJar {
+    archiveBaseName.set('kiki')
+    archiveClassifier.set('')
 }
 
 run {
