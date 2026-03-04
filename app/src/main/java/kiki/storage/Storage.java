@@ -17,7 +17,15 @@ import kiki.task.Todo;
  * Handles saving and loading tasks to/from a file.
  */
 public class Storage {
-    private static final String FILE_PATH = "data/kiki.txt";
+    private String filePath;
+
+    /**
+     * Initializes the Storage object with a specific file path.
+     * @param filePath The path to the file.
+     */
+    public Storage(String filePath) {
+        this.filePath = filePath;
+    }
 
     /**
      * Loads tasks from the local file system.
@@ -26,11 +34,11 @@ public class Storage {
      * @return An ArrayList of Task objects parsed from the storage file.
      * @throws IOException If an I/O error occurs while opening or creating the file.
      */
-    public static ArrayList<Task> loadTasks() throws IOException {
+    public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 
         try {
-            Path path = Paths.get(FILE_PATH);
+            Path path = Paths.get(this.filePath);
 
             // Create folder if missing
             Files.createDirectories(path.getParent());
@@ -63,9 +71,9 @@ public class Storage {
      *
      * @param tasks The ArrayList of Task objects to be persisted.
      */
-    public static void saveTasks(ArrayList<Task> tasks) {
+    public void saveTasks(ArrayList<Task> tasks) {
         try {
-            Path path = Paths.get(FILE_PATH);
+            Path path = Paths.get(this.filePath);
             Files.createDirectories(path.getParent());
 
             BufferedWriter bw = Files.newBufferedWriter(path);
@@ -81,7 +89,7 @@ public class Storage {
         }
     }
 
-    private static String encodeTask(Task t) {
+    private String encodeTask(Task t) {
         if (t instanceof Todo) {
             return "T | " + (t.isDone() ? "1" : "0") + " | " + t.getDescription();
         } else if (t instanceof Deadline d) {
@@ -93,7 +101,7 @@ public class Storage {
         return "";
     }
 
-    private static Task parseTask(String line) {
+    private Task parseTask(String line) {
         try {
             String[] parts = line.split(" \\| ");
             String type = parts[0];

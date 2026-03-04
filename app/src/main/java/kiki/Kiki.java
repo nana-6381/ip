@@ -25,10 +25,11 @@ public class Kiki {
      * Creates a new instance of the class.
      */
     public Kiki(String filePath) {
-        ui = new Ui();
+        this.ui = new Ui();
+        this.storage = new Storage(filePath);
         try {
             // Load existing tasks into the TaskList
-            this.tasks = new TaskList(Storage.loadTasks());
+            this.tasks = new TaskList(this.storage.loadTasks());
         } catch (Exception e) {
             ui.showLoadingError();
             this.tasks = new TaskList();
