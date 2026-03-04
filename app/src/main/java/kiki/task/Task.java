@@ -5,7 +5,7 @@ package kiki.task;
  */
 public class Task {
     private final String description;
-    boolean isDone;
+    private boolean isDone;
 
     /**
      * Creates a new instance of the class.
@@ -26,13 +26,17 @@ public class Task {
         this.isDone = false;
     }
 
-    public boolean isDone() { return isDone; }
+    public boolean isDone() {
+        return isDone;
+    }
 
     /**
      * Returns the requested data.
      * @return The value of the requested field.
      */
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     /**
      * Returns the status icon based on whether the task is done.
