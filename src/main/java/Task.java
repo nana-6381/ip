@@ -1,6 +1,6 @@
 public class Task {
     private final String description;
-    private boolean isDone;
+    boolean isDone;
 
     public Task(String description) {
         this.description = description;
@@ -14,6 +14,10 @@ public class Task {
     public void setNotDone() {
         this.isDone = false;
     }
+
+    public boolean isDone() { return isDone; }
+
+    public String getDescription() { return description; }
 
     public String getStatusIcon() {
         return isDone ? "X" : " ";

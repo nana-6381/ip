@@ -1,3 +1,6 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,7 +8,7 @@ public class Kiki {
 
     private static final int MAX_ITEMS = 100;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         String nameAlt = "(づ｡◕‿‿◕｡)づ  K i k i\n";
@@ -15,8 +18,10 @@ public class Kiki {
                 + "| . \\ | |   <| |\n"
                 + "|_|\\_\\|_|_|\\_\\_|\n";
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = Storage.loadTasks();
         int crowdedListThreshold = 10;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         System.out.println("Hey what's up, from\n" + logo);
         System.out.println("How can I help you today?");
@@ -56,6 +61,7 @@ public class Kiki {
 
                 Task t = tasks.get(index - 1);
                 t.setDone();
+                Storage.saveTasks(tasks);
                 System.out.println("Nice! I've marked this task as done:");
                 System.out.println("  " + t);
                 continue;
@@ -70,6 +76,7 @@ public class Kiki {
 
                 Task t = tasks.get(index - 1);
                 t.setNotDone();
+                Storage.saveTasks(tasks);
                 System.out.println("OK, I've marked this task as not done yet:");
                 System.out.println("  " + t);
                 continue;
@@ -84,6 +91,7 @@ public class Kiki {
                 }
 
                 Task removed = tasks.remove(index - 1);
+                Storage.saveTasks(tasks);
                 System.out.println("Noted. I've removed this task:");
                 System.out.println("  " + removed);
                 System.out.println("Now you have " + tasks.size() + " tasks in the list.");
@@ -103,46 +111,42 @@ public class Kiki {
             }
 
             if (input.toLowerCase().startsWith("deadline ")) {
-                String rest = input.substring(9).trim();
-                int byIndex = rest.indexOf(" /by ");
-                if (byIndex == -1) {
-                    System.out.println("(format: deadline <task> /by <when>)");
-                    continue;
+                try {
+                    String rest = input.substring(9).trim();
+                    int byIndex = rest.indexOf(" /by ");
+                    if (byIndex == -1) {
+                        System.out.println("(format: deadline <task> /by yyyy-mm-dd)");
+                        continue;
+                    }
+                    String desc = rest.substring(0, byIndex).trim();
+                    String by = rest.substring(byIndex + 5).trim();
+
+                    addTask(tasks, new Deadline(desc, by), crowdedListThreshold);
+                } catch (java.time.format.DateTimeParseException e) {
+                    System.out.println("(Please use yyyy-mm-dd for the date!)");
                 }
-
-                String desc = rest.substring(0, byIndex).trim();
-                String by = rest.substring(byIndex + 5).trim();
-
-                if (desc.isEmpty() || by.isEmpty()) {
-                    System.out.println("(format: deadline <task> /by <when>)");
-                    continue;
-                }
-
-                addTask(tasks, new Deadline(desc, by), crowdedListThreshold);
                 continue;
             }
 
             if (input.toLowerCase().startsWith("event ")) {
-                String rest = input.substring(6).trim();
+                try {
+                    String rest = input.substring(6).trim();
+                    int fromIndex = rest.indexOf(" /from ");
+                    int toIndex = rest.indexOf(" /to ");
 
-                int fromIndex = rest.indexOf(" /from ");
-                int toIndex = rest.indexOf(" /to ");
+                    if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+                        System.out.println("(format: event <task> /from yyyy-mm-dd /to yyyy-mm-dd)");
+                        continue;
+                    }
 
-                if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-                    System.out.println("(format: event <task> /from <start> /to <end>)");
-                    continue;
+                    String desc = rest.substring(0, fromIndex).trim();
+                    String from = rest.substring(fromIndex + 7, toIndex).trim();
+                    String to = rest.substring(toIndex + 5).trim();
+
+                    addTask(tasks, new Event(desc, from, to), crowdedListThreshold);
+                } catch (java.time.format.DateTimeParseException e) {
+                    System.out.println("(Please use yyyy-mm-dd for the dates!)");
                 }
-
-                String desc = rest.substring(0, fromIndex).trim();
-                String from = rest.substring(fromIndex + 7, toIndex).trim();
-                String to = rest.substring(toIndex + 5).trim();
-
-                if (desc.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                    System.out.println("(format: event <task> /from <start> /to <end>)");
-                    continue;
-                }
-
-                addTask(tasks, new Event(desc, from, to), crowdedListThreshold);
                 continue;
             }
 
@@ -160,6 +164,7 @@ public class Kiki {
         }
 
         tasks.add(task);
+        Storage.saveTasks(tasks);
 
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + task);
