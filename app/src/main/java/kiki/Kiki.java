@@ -1,20 +1,15 @@
 package kiki;
 
-import kiki.task.*;
-import kiki.storage.Storage;
-import kiki.ui.Ui;
 import kiki.parser.Parser;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
-import kiki.task.TaskList;
-import kiki.task.Task;
-import kiki.task.Todo;
 import kiki.task.Deadline;
 import kiki.task.Event;
-import kiki.ui.Ui;
+import kiki.task.Task;
+import kiki.task.TaskList;
+import kiki.task.Todo;
 import kiki.storage.Storage;
-import kiki.parser.Parser;
+import kiki.ui.Ui;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Kiki {
     private Storage storage;
@@ -25,10 +20,10 @@ public class Kiki {
         ui = new Ui();
         try {
             // Load existing tasks into the TaskList
-            tasks = new TaskList(Storage.loadTasks());
+            this.tasks = new TaskList(Storage.loadTasks());
         } catch (Exception e) {
             ui.showLoadingError();
-            tasks = new TaskList();
+            this.tasks = new TaskList();
         }
     }
 
@@ -47,21 +42,28 @@ public class Kiki {
             String commandWord = Parser.getCommandWord(fullCommand);
 
             try {
-                if (commandWord.equals("bye")) {
-                    isExit = true;
-                    ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
-                } else if (commandWord.equals("list")) {
-                    handleList();
-                } else if (commandWord.equals("todo")) {
-                    handleTodo(fullCommand);
-                } else if (commandWord.equals("deadline")) {
-                    handleDeadline(fullCommand);
-                } else if (commandWord.equals("event")) {
-                    handleEvent(fullCommand);
-                } else if (commandWord.equals("delete")) {
-                    handleDelete(fullCommand);
-                } else {
-                    ui.printMessage("(try: todo, deadline, event, list, delete, or bye)");
+                switch (commandWord) {
+                    case "bye":
+                        isExit = true;
+                        ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
+                        break;
+                    case "list":
+                        handleList();
+                        break;
+                    case "todo":
+                        handleTodo(fullCommand);
+                        break;
+                    case "deadline":
+                        handleDeadline(fullCommand);
+                        break;
+                    case "event":
+                        handleEvent(fullCommand);
+                        break;
+                    case "delete":
+                        handleDelete(fullCommand);
+                        break;
+                    default:
+                        ui.printMessage("(try: todo, deadline, event, list, delete, or bye)");
                 }
             } catch (Exception e) {
                 ui.showError(e.getMessage());
@@ -73,7 +75,9 @@ public class Kiki {
     private void handleList() {
         if (tasks.getSize() == 0) {
             ui.printMessage("Your list is empty!");
+            return;
         } else {
+
             for (int i = 0; i < tasks.getSize(); i++) {
                 ui.printMessage((i + 1) + "." + tasks.getTask(i));
             }

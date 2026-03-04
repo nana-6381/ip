@@ -2,7 +2,7 @@ package kiki.task;
 
 public class Task {
     private final String description;
-    boolean isDone;
+    private boolean isDone;
 
     public Task(String description) {
         this.description = description;
@@ -17,9 +17,13 @@ public class Task {
         this.isDone = false;
     }
 
-    public boolean isDone() { return isDone; }
+    public boolean isDone() {
+        return isDone;
+    }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
     public String getStatusIcon() {
         return isDone ? "X" : " ";
