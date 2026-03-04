@@ -6,6 +6,7 @@ import kiki.ui.Ui;
 import kiki.parser.Parser;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import kiki.task.TaskList;
 import kiki.task.Task;
@@ -61,6 +62,8 @@ public class Kiki {
                 if (commandWord.equals("bye")) {
                     isExit = true;
                     ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
+                } else if (commandWord.equals("find")) {
+                    handleFind(fullCommand);
                 } else if (commandWord.equals("list")) {
                     handleList();
                 } else if (commandWord.equals("todo")) {
@@ -78,6 +81,31 @@ public class Kiki {
                 ui.showError(e.getMessage());
             }
             ui.showLine();
+        }
+    }
+
+    /**
+     * Handles the 'find' command by searching for tasks that contain the keyword.
+     *
+     * @param input The full command string (e.g., "find book").
+     */
+    private void handleFind(String input) {
+        // We assume 'find ' is 5 characters
+        if (input.length() <= 5) {
+            ui.printMessage("What am I looking for? Usage: find <keyword>");
+            return;
+        }
+
+        String keyword = input.substring(5).trim();
+        ArrayList<Task> foundTasks = tasks.findTasks(keyword);
+
+        if (foundTasks.isEmpty()) {
+            ui.printMessage("I couldn't find any tasks matching: " + keyword);
+        } else {
+            ui.printMessage("Here are the matching tasks in your list:");
+            for (int i = 0; i < foundTasks.size(); i++) {
+                ui.printMessage((i + 1) + "." + foundTasks.get(i));
+            }
         }
     }
 

@@ -12,7 +12,10 @@ public class Parser {
      * @return A string representing the command type in lowercase.
      */
     public static String getCommandWord(String input) {
-        return input.split(" ")[0].toLowerCase();
+        if (input == null || input.trim().isEmpty()) {
+            return "";
+        }
+        return input.trim().split(" ")[0].toLowerCase();
     }
 
     /**
