@@ -10,10 +10,16 @@ public class Ui {
             + "| . \\ | |   <| |\n"
             + "|_|\\_\\|_|_|\\_\\_|\n";
 
+    /**
+     * Creates a new instance of the class.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Prints a greeting message to the user.
+     */
     public void showWelcome() {
         System.out.println("Hey what's up, from\n" + LOGO);
         System.out.println("How can I help you today?");
@@ -27,6 +33,10 @@ public class Ui {
         System.out.println("____________________________________________________________");
     }
 
+    /**
+     * Displays an error message.
+     * @param msg The message to show.
+     */
     public void showError(String msg) {
         System.out.println("Error: " + msg);
     }

@@ -16,11 +16,19 @@ import kiki.ui.Ui;
 import kiki.storage.Storage;
 import kiki.parser.Parser;
 
+/**
+ * Main class for the Kiki chatbot.
+ * Handles the initialization and the main execution loop.
+ */
+
 public class Kiki {
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
 
+    /**
+     * Creates a new instance of the class.
+     */
     public Kiki(String filePath) {
         ui = new Ui();
         try {
@@ -32,6 +40,9 @@ public class Kiki {
         }
     }
 
+    /**
+     * Starts the application.
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
@@ -134,6 +145,9 @@ public class Kiki {
         ui.printMessage("Now you have " + tasks.getSize() + " tasks in the list.");
     }
 
+    /**
+     * Entry point of the application
+     */
     public static void main(String[] args) {
         new Kiki("data/kiki.txt").run();
     }

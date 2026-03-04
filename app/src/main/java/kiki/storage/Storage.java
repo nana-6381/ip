@@ -5,6 +5,9 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 
+/**
+ * Handles saving and loading tasks to/from a file.
+ */
 public class Storage {
     private static final String FILE_PATH = "data/kiki.txt";
     public static ArrayList<Task> loadTasks() throws IOException {

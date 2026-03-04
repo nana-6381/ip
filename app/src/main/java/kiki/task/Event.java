@@ -3,22 +3,36 @@ package kiki.task;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task that occurs within a specific time range.
+ */
 public class Event extends Task {
     private LocalDate start;
     private LocalDate end;
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
 
+    /**
+     * Creates a new instance of the class.
+     */
     public Event(String desc, String start, String end) {
         super(desc);
         this.start = LocalDate.parse(start);
         this.end = LocalDate.parse(end);
     }
 
+    /**
+     * Returns the requested data.
+     * @return The value of the requested field.
+     */
     public LocalDate getStart() {
         return start;
     }
 
+    /**
+     * Returns the requested data.
+     * @return The value of the requested field.
+     */
     public LocalDate getEnd() {
         return end;
     }
