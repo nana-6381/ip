@@ -1,15 +1,31 @@
 package kiki.storage;
 
-import kiki.task.*;
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+
+import kiki.task.Deadline;
+import kiki.task.Event;
+import kiki.task.Task;
+import kiki.task.Todo;
 
 /**
  * Handles saving and loading tasks to/from a file.
  */
 public class Storage {
     private static final String FILE_PATH = "data/kiki.txt";
+
+    /**
+     * Loads tasks from the local file system.
+     * If the data folder or file does not exist, they will be created.
+     *
+     * @return An ArrayList of Task objects parsed from the storage file.
+     * @throws IOException If an I/O error occurs while opening or creating the file.
+     */
     public static ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
 
@@ -41,6 +57,12 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the provided list of tasks to the local file system.
+     * The tasks are encoded into a string format before being written to the file.
+     *
+     * @param tasks The ArrayList of Task objects to be persisted.
+     */
     public static void saveTasks(ArrayList<Task> tasks) {
         try {
             Path path = Paths.get(FILE_PATH);
@@ -65,7 +87,8 @@ public class Storage {
         } else if (t instanceof Deadline d) {
             return "D | " + (d.isDone() ? "1" : "0") + " | " + d.getDescription() + " | " + d.getEnd();
         } else if (t instanceof Event e) {
-            return "E | " + (t.isDone() ? "1" : "0") + " | " + e.getDescription() + " | " + e.getStart() + " | " + e.getEnd();
+            return "E | " + (t.isDone() ? "1" : "0") + " | "
+                    + e.getDescription() + " | " + e.getStart() + " | " + e.getEnd();
         }
         return "";
     }
@@ -78,19 +101,25 @@ public class Storage {
 
             if (type.equals("T")) {
                 Task t = new Todo(parts[2]);
-                if (done) t.setDone();
+                if (done) {
+                    t.setDone();
+                }
                 return t;
             }
 
             if (type.equals("D")) {
                 Task t = new Deadline(parts[2], parts[3]);
-                if (done) t.setDone();
+                if (done) {
+                    t.setDone();
+                }
                 return t;
             }
 
             if (type.equals("E")) {
                 Task t = new Event(parts[2], parts[3], parts[4]);
-                if (done) t.setDone();
+                if (done) {
+                    t.setDone();
+                }
                 return t;
             }
         } catch (Exception e) {

@@ -2,13 +2,17 @@ package kiki.ui;
 
 import java.util.Scanner;
 
+/**
+ * Represents the user interface of the Kiki chatbot.
+ * Handles all interactions with the user via the command line.
+ */
 public class Ui {
-    private Scanner scanner;
-    private final String LOGO = " _  __ _ _    _\n"
+    private static final String LOGO = " _  __ _ _    _\n"
             + "| |/ /(_) | _(_)\n"
             + "| ' / | | |/ / |\n"
             + "| . \\ | |   <| |\n"
             + "|_|\\_\\|_|_|\\_\\_|\n";
+    private Scanner scanner;
 
     /**
      * Creates a new instance of the class.

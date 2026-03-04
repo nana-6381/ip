@@ -1,20 +1,15 @@
 package kiki;
 
-import kiki.task.*;
-import kiki.storage.Storage;
-import kiki.ui.Ui;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import kiki.task.TaskList;
-import kiki.task.Task;
-import kiki.task.Todo;
+import kiki.parser.Parser;
+import kiki.storage.Storage;
 import kiki.task.Deadline;
 import kiki.task.Event;
+import kiki.task.Task;
+import kiki.task.TaskList;
+import kiki.task.Todo;
 import kiki.ui.Ui;
-import kiki.storage.Storage;
-import kiki.parser.Parser;
 
 /**
  * Main class for the Kiki chatbot.
@@ -59,30 +54,30 @@ public class Kiki {
 
             try {
                 switch (commandWord) {
-                    case "bye":
-                        isExit = true;
-                        ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
-                        break;
-                    case "find":
-                        handleFind(fullCommand);
-                        break;
-                    case "list":
-                        handleList();
-                        break;
-                    case "todo":
-                        handleTodo(fullCommand);
-                        break;
-                    case "deadline":
-                        handleDeadline(fullCommand);
-                        break;
-                    case "event":
-                        handleEvent(fullCommand);
-                        break;
-                    case "delete":
-                        handleDelete(fullCommand);
-                        break;
-                    default:
-                        ui.printMessage("(try: todo, deadline, event, list, delete, or bye)");
+                case "bye":
+                    isExit = true;
+                    ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
+                    break;
+                case "find":
+                    handleFind(fullCommand);
+                    break;
+                case "list":
+                    handleList();
+                    break;
+                case "todo":
+                    handleTodo(fullCommand);
+                    break;
+                case "deadline":
+                    handleDeadline(fullCommand);
+                    break;
+                case "event":
+                    handleEvent(fullCommand);
+                    break;
+                case "delete":
+                    handleDelete(fullCommand);
+                    break;
+                default:
+                    ui.printMessage("(try: todo, deadline, event, list, delete, or bye)");
                 }
             } catch (Exception e) {
                 ui.showError(e.getMessage());

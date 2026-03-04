@@ -6,10 +6,10 @@ import java.time.format.DateTimeFormatter;
 /**
  * Represents a task that needs to be done before a specific date.
  */
-public class Deadline extends Task{
-    private LocalDate end;
+public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private LocalDate end;
 
     /**
      * Creates a new instance of the class.

@@ -7,10 +7,10 @@ import java.time.format.DateTimeFormatter;
  * Represents a task that occurs within a specific time range.
  */
 public class Event extends Task {
-    private LocalDate start;
-    private LocalDate end;
     private static final DateTimeFormatter OUTPUT_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private LocalDate start;
+    private LocalDate end;
 
     /**
      * Creates a new instance of the class.
