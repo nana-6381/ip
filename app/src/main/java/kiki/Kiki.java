@@ -77,8 +77,12 @@ public class Kiki {
                 case "delete":
                     handleDelete(fullCommand);
                     break;
+                case "filter":
+                    handleFilter(fullCommand);
+                    break;
                 default:
-                    ui.printMessage("(try: todo, deadline, event, list, delete, or bye)");
+                    ui.printMessage("I don't understand that~ (=^-ω-^=)" +
+                            "\n(try: todo, deadline, event, list, delete, find, filter, or bye)");
                 }
             } catch (Exception e) {
                 ui.showError(e.getMessage());
@@ -114,7 +118,7 @@ public class Kiki {
 
     private void handleList() {
         if (tasks.getSize() == 0) {
-            ui.printMessage("Your list is empty!");
+            ui.printMessage("Your list is empty! Go take a nap~ (=￣ω￣=)");
             return;
         } else {
 
@@ -174,8 +178,147 @@ public class Kiki {
     private void addTask(Task t) {
         tasks.addTask(t);
         storage.saveTasks(tasks.getTasks());
-        ui.printMessage("Got it. I've added this task:\n  " + t);
+        ui.printMessage("Purrfect! I've added this task:\n  " + t);
         ui.printMessage("Now you have " + tasks.getSize() + " tasks in the list.");
+    }
+
+    public String getResponse(String input) {
+        if (input.isEmpty()) {
+            return "Say something please~ (=^･ω･^=)";
+        }
+        String commandWord = Parser.getCommandWord(input);
+        try {
+            switch (commandWord) {
+                case "bye":     return "Bye bye~ See you soon! (=^･ω･^=)\n- K i k i";
+                case "list":    return buildListResponse();
+                case "find":    return buildFindResponse(input);
+                case "todo":    return buildTodoResponse(input);
+                case "deadline": return buildDeadlineResponse(input);
+                case "event":   return buildEventResponse(input);
+                case "delete":  return buildDeleteResponse(input);
+                case "filter":  return buildFilterResponse(input);
+                default:        return "I don't understand that~ (=^-ω-^=)\n(try: todo, deadline, event, list, delete, find, filter, or bye)";
+            }
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+
+    private String buildListResponse() {
+        if (tasks.getSize() == 0) {
+            return "Your list is empty! Go take a nap~ (=￣ω￣=)";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tasks.getSize(); i++) {
+            sb.append((i + 1)).append(". ").append(tasks.getTask(i)).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    private String buildFindResponse(String input) {
+        if (input.length() <= 5) {
+            return "What am I looking for? Usage: find <keyword>";
+        }
+        String keyword = input.substring(5).trim();
+        ArrayList<Task> found = tasks.findTasks(keyword);
+        if (found.isEmpty()) {
+            return "I couldn't find any tasks matching: " + keyword + " (=^-ω-^=)";
+        }
+        StringBuilder sb = new StringBuilder("Here are the matching tasks~ ฅ^•ﻌ•^ฅ\n");
+        for (int i = 0; i < found.size(); i++) {
+            sb.append((i + 1)).append(". ").append(found.get(i)).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    private String buildTodoResponse(String input) {
+        String desc = input.substring(4).trim();
+        if (desc.isEmpty()) {
+            return "Wait! The description of a todo cannot be empty.";
+        }
+        Todo t = new Todo(desc);
+        tasks.addTask(t);
+        storage.saveTasks(tasks.getTasks());
+        return "Purrfect! I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+    }
+
+    private String buildDeadlineResponse(String input) {
+        try {
+            String rest = input.substring(9).trim();
+            int byIndex = rest.indexOf(" /by ");
+            String desc = rest.substring(0, byIndex).trim();
+            String by = rest.substring(byIndex + 5).trim();
+            Deadline t = new Deadline(desc, by);
+            tasks.addTask(t);
+            storage.saveTasks(tasks.getTasks());
+            return "Purrfect! I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+        } catch (Exception e) {
+            return "Format: deadline <desc> /by yyyy-mm-dd";
+        }
+    }
+
+    private String buildEventResponse(String input) {
+        try {
+            String rest = input.substring(6).trim();
+            int fromIndex = rest.indexOf(" /from ");
+            int toIndex = rest.indexOf(" /to ");
+            String desc = rest.substring(0, fromIndex).trim();
+            String from = rest.substring(fromIndex + 7, toIndex).trim();
+            String to = rest.substring(toIndex + 5).trim();
+            Event t = new Event(desc, from, to);
+            tasks.addTask(t);
+            storage.saveTasks(tasks.getTasks());
+            return "Purrfect! I've added:\n  " + t + "\nNow you have " + tasks.getSize() + " tasks.";
+        } catch (Exception e) {
+            return "Format: event <desc> /from yyyy-mm-dd /to yyyy-mm-dd";
+        }
+    }
+
+    private String buildDeleteResponse(String input) {
+        try {
+            int idx = Parser.parseIndex(input.substring(6)) - 1;
+            if (idx >= 0 && idx < tasks.getSize()) {
+                Task removed = tasks.deleteTask(idx);
+                storage.saveTasks(tasks.getTasks());
+                return "Noted. I've removed:\n  " + removed + "\nNow you have " + tasks.getSize() + " tasks.";
+            } else {
+                return "Invalid task number! (=^-ω-^=)";
+            }
+        } catch (Exception e) {
+            return "Format: delete <task number>";
+        }
+    }
+
+    private String buildFilterResponse(String input) {
+        String criteria = input.substring(6).trim().toLowerCase();
+        ArrayList<Task> filtered = tasks.filterTasks(criteria);
+        if (filtered.isEmpty()) {
+            return "No tasks matching filter: " + criteria + " (=^-ω-^=)";
+        }
+        StringBuilder sb = new StringBuilder("Here are the filtered tasks~ ฅ^•ﻌ•^ฅ\n");
+        for (int i = 0; i < filtered.size(); i++) {
+            sb.append((i + 1)).append(". ").append(filtered.get(i)).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    /**
+     * Handles the 'filter' command by filtering tasks based on the given criteria.
+     * Supported criteria: todo, deadline, event, done, undone.
+     *
+     * @param input The full command string (e.g., "filter done").
+     */
+    private void handleFilter(String input) {
+        String criteria = input.substring(6).trim().toLowerCase();
+        ArrayList<Task> filtered = tasks.filterTasks(criteria);
+        if (filtered.isEmpty()) {
+            ui.printMessage("No tasks matching filter: " + criteria + " (=^-ω-^=)");
+        } else {
+            ui.printMessage("Here are the filtered tasks~ ฅ^•ﻌ•^ฅ");
+            for (int i = 0; i < filtered.size(); i++) {
+                ui.printMessage((i + 1) + ". " + filtered.get(i));
+            }
+        }
     }
 
     /**

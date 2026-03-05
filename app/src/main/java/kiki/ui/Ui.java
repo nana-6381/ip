@@ -26,7 +26,7 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println("Hey what's up, from\n" + LOGO);
-        System.out.println("How can I help you today?");
+        System.out.println("How can I help you today? ฅ^•ﻌ•^ฅ");
     }
 
     public String readCommand() {
