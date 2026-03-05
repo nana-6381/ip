@@ -17,6 +17,11 @@ import kiki.ui.Ui;
  */
 
 public class Kiki {
+    private static final int FIND_PREFIX_LENGTH = 5;
+    private static final int TODO_PREFIX_LENGTH = 4;
+    private static final int DEADLINE_PREFIX_LENGTH = 9;
+    private static final int EVENT_PREFIX_LENGTH = 6;
+    private static final int DELETE_PREFIX_LENGTH = 6;
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
@@ -103,7 +108,7 @@ public class Kiki {
             return;
         }
 
-        String keyword = input.substring(5).trim();
+        String keyword = input.substring(FIND_PREFIX_LENGTH).trim();
         ArrayList<Task> foundTasks = tasks.findTasks(keyword);
 
         if (foundTasks.isEmpty()) {
@@ -129,7 +134,7 @@ public class Kiki {
     }
 
     private void handleTodo(String input) {
-        String desc = input.substring(4).trim();
+        String desc = input.substring(TODO_PREFIX_LENGTH).trim();
         if (desc.isEmpty()) {
             ui.printMessage("Wait! The description of a todo cannot be empty.");
             return;
@@ -139,7 +144,7 @@ public class Kiki {
 
     private void handleDeadline(String input) {
         try {
-            String rest = input.substring(9).trim();
+            String rest = input.substring(DEADLINE_PREFIX_LENGTH).trim();
             int byIndex = rest.indexOf(" /by ");
             String desc = rest.substring(0, byIndex).trim();
             String by = rest.substring(byIndex + 5).trim();
@@ -151,7 +156,7 @@ public class Kiki {
 
     private void handleEvent(String input) {
         try {
-            String rest = input.substring(6).trim();
+            String rest = input.substring(EVENT_PREFIX_LENGTH).trim();
             int fromIndex = rest.indexOf(" /from ");
             int toIndex = rest.indexOf(" /to ");
             String desc = rest.substring(0, fromIndex).trim();
@@ -164,7 +169,7 @@ public class Kiki {
     }
 
     private void handleDelete(String input) {
-        int idx = Parser.parseIndex(input.substring(6)) - 1;
+        int idx = Parser.parseIndex(input.substring(DELETE_PREFIX_LENGTH)) - 1;
         assert idx >= 0 : "Index should not be negative after parsing";
         if (idx >= 0 && idx < tasks.getSize()) {
             Task removed = tasks.deleteTask(idx);
