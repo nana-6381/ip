@@ -85,9 +85,6 @@ public class Kiki {
                 case "delete":
                     handleDelete(fullCommand);
                     break;
-                case "filter":
-                    handleFilter(fullCommand);
-                    break;
                 default:
                     ui.printMessage("I don't understand that~ (=^-ω-^=)" +
                             "\n(try: todo, deadline, event, list, delete, find, filter, or bye)");
