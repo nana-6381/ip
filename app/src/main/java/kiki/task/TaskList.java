@@ -52,6 +52,28 @@ public class TaskList {
     }
 
     /**
+     * Filters tasks in the list based on the given criteria.
+     * Supported criteria: todo, deadline, event, done, undone.
+     *
+     * @param criteria The filter criteria to apply.
+     * @return An ArrayList containing all tasks that match the criteria.
+     */
+    public ArrayList<Task> filterTasks(String criteria) {
+        ArrayList<Task> result = new ArrayList<>();
+        for (Task t : tasks) {
+            switch (criteria) {
+                case "todo":     if (t instanceof Todo) result.add(t); break;
+                case "deadline": if (t instanceof Deadline) result.add(t); break;
+                case "event":    if (t instanceof Event) result.add(t); break;
+                case "done":     if (t.isDone()) result.add(t); break;
+                case "undone":   if (!t.isDone()) result.add(t); break;
+                default: break;
+            }
+        }
+        return result;
+    }
+
+    /**
      * Searches for tasks in the list that contain the given keyword in their description.
      *
      * @param keyword The sequence of characters to search for.

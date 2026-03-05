@@ -59,6 +59,9 @@ public class Kiki {
                     isExit = true;
                     ui.printMessage("Bye, hope to see you soon.\n- (づ｡◕‿‿◕｡)づ  K i k i");
                     break;
+                case "filter":
+                    handleFilter(fullCommand);
+                    break;
                 case "find":
                     handleFind(fullCommand);
                     break;
@@ -84,6 +87,25 @@ public class Kiki {
                 ui.showError(e.getMessage());
             }
             ui.showLine();
+        }
+    }
+
+    /**
+     * Handles the 'filter' command by filtering tasks based on the given criteria.
+     * Supported criteria: todo, deadline, event, done, undone.
+     *
+     * @param input The full command string (e.g., "filter done").
+     */
+    private void handleFilter(String input) {
+        String criteria = input.substring(6).trim().toLowerCase();
+        ArrayList<Task> filtered = tasks.filterTasks(criteria);
+        if (filtered.isEmpty()) {
+            ui.printMessage("No tasks matching filter: " + criteria);
+        } else {
+            ui.printMessage("Here are the filtered tasks:");
+            for (int i = 0; i < filtered.size(); i++) {
+                ui.printMessage((i + 1) + ". " + filtered.get(i));
+            }
         }
     }
 
