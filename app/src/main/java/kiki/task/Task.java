@@ -11,6 +11,8 @@ public class Task {
      * Creates a new instance of the class.
      */
     public Task(String description) {
+        assert description != null && !description.isEmpty()
+                : "Description should not be null or empty";
         this.description = description;
         this.isDone = false;
     }

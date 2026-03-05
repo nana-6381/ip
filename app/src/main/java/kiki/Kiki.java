@@ -165,6 +165,7 @@ public class Kiki {
 
     private void handleDelete(String input) {
         int idx = Parser.parseIndex(input.substring(6)) - 1;
+        assert idx >= 0 : "Index should not be negative after parsing";
         if (idx >= 0 && idx < tasks.getSize()) {
             Task removed = tasks.deleteTask(idx);
             storage.saveTasks(tasks.getTasks());
@@ -176,6 +177,7 @@ public class Kiki {
     }
 
     private void addTask(Task t) {
+        assert t != null : "Task to be added should not be null!";
         tasks.addTask(t);
         storage.saveTasks(tasks.getTasks());
         ui.printMessage("Purrfect! I've added this task:\n  " + t);

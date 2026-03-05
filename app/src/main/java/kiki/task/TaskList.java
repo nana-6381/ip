@@ -40,6 +40,7 @@ public class TaskList {
      * @return The task that was removed.
      */
     public Task deleteTask(int index) {
+        assert index >= 0 && index < tasks.size() : "Index out of bounds: " + index;
         return tasks.remove(index);
     }
 
@@ -52,6 +53,7 @@ public class TaskList {
     }
 
     public Task getTask(int index) {
+        assert index >= 0 && index < tasks.size() : "Index out of bounds: " + index;
         return tasks.get(index);
     }
 
